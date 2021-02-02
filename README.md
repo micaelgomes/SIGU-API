@@ -13,8 +13,8 @@
 docker-compose up
 ```
 
-* O comando subirá o container com o banco da aplicação (Postgres)
-* Junto com um interface (pgAdmin 4)
+* O comando subirá o container com o banco da aplicação (Postgres) - porta 5432
+* Junto com um interface (pgAdmin 4) - porta 16543
 
 
 ## API Setup
@@ -22,4 +22,4 @@ docker-compose up
 yarn dev:sever
 ```
 
-* Para subir o serviço em modo de desenvolvimento
+* Para subir o serviço em modo de desenvolvimento - porta 3333
