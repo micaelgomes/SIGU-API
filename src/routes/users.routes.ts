@@ -24,9 +24,9 @@ usersRouter.get('/', ensureAuthenticated, async (request, response) => {
  * To create new User
  */
 usersRouter.post('/', async (request, response) => {
-  const { name, email, password } = request.body;
+  const { id, name, email, password } = request.body;
   const createUserService = new CreateUserService();
-  const user = await createUserService.execute({ name, email, password });
+  const user = await createUserService.execute({ id, name, email, password });
 
   return response.status(201).json(user);
 });
@@ -44,18 +44,19 @@ usersRouter.delete('/:id', ensureAuthenticated, async (request, response) => {
 });
 
 usersRouter.patch(
-  '/avatar',
+  '/avatar/:id',
   ensureAuthenticated,
   upload.single('avatar'),
-  async (req, res) => {
+  async (request, response) => {
+    const { id } = request.params;
     const updateUserAvatar = new UpdateUserAvatarService();
 
     const user = await updateUserAvatar.execute({
-      userId: req.user.id,
-      avatarFilename: req.file.filename,
+      userId: id,
+      avatarFilename: request.file.filename,
     });
 
-    return res.status(201).json(user);
+    return response.status(201).json(user);
   },
 );
 

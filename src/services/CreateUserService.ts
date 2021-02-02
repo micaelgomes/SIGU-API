@@ -5,6 +5,7 @@ import { UserMap, UserDTO } from '../mappers/UserMap';
 import AppError from '../errors/AppError';
 
 interface RequestDTO {
+  id?: string;
   name: string;
   email: string;
   password: string;
@@ -12,30 +13,47 @@ interface RequestDTO {
 
 class CreateUserService {
   public async execute({
+    id,
     name,
     email,
     password,
   }: RequestDTO): Promise<UserDTO> {
     const userRepository = getRepository(User);
 
-    const checkUserExists = await userRepository.findOne({
-      where: { email },
+    const userCurr = await userRepository.findOne({
+      where: { id },
     });
 
-    if (checkUserExists) {
-      throw new AppError('Email address already used.');
+    const hashedPassword = await hash(password, 8);
+
+    if (!userCurr) {
+      const checkEmailExist = await userRepository.findOne({
+        where: { email },
+      });
+
+      if (checkEmailExist) throw new AppError('Email address already used.');
+
+      const user = await userRepository.create({
+        name,
+        email,
+        password: hashedPassword,
+      });
+
+      await userRepository.save(user);
+
+      const userToDTO = UserMap.toDTO(user);
+
+      return userToDTO;
     }
 
-    const hashedPassword = await hash(password, 8);
-    const user = await userRepository.create({
+    const userUpdated = await userRepository.save({
+      id,
       name,
       email,
       password: hashedPassword,
     });
 
-    await userRepository.save(user);
-
-    const userToDTO = UserMap.toDTO(user);
+    const userToDTO = UserMap.toDTO(userUpdated);
 
     return userToDTO;
   }
