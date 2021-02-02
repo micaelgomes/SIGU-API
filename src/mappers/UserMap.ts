@@ -6,6 +6,7 @@ export interface UserDTO {
   id: string;
   createAt: Date;
   updateAt: Date;
+  avatar: string;
 }
 
 export class UserMap {
@@ -16,6 +17,7 @@ export class UserMap {
       id: user.id,
       createAt: user.createAt,
       updateAt: user.updateAt,
+      avatar: user.avatar,
     };
 
     return userToDTO;
